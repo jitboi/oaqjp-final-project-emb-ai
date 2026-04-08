@@ -1,3 +1,8 @@
+"""
+server.py
+
+This module contains the Flask server application for the Final project.
+"""
 from flask import Flask, render_template, request
 from EmotionDetection.emotion_detection import emotion_detector
 #Initiate the flask app : TODO
@@ -5,14 +10,14 @@ app=Flask("Emotion Detector")
 @app.route("/emotionDetector")
 def sent_analyzer():
     ''' This code receives the text from the HTML interface and 
-        runs sentiment analysis over it using sentiment_analysis()
-        function. The output returned shows the label and its confidence 
-        score for the provided text.
+        runs emotion analysis over it using emotion_detector()
+        function.
     '''
-    # TODO
     text_to_analyze = request.args.get("textToAnalyze")
     response_str = emotion_detector(text_to_analyze)
     dominant_emotion = response_str["dominant_emotion"]
+    if dominant_emotion is None:
+        return "Invalid text! Please try again!"
     del response_str["dominant_emotion"]
     # Final response
     response = (
@@ -23,8 +28,9 @@ def sent_analyzer():
 
 @app.route("/")
 def render_index_page():
+    ''' render default index page
+    '''
     return render_template("index.html")
-    
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",port=5000)
